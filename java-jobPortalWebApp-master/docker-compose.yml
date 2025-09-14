@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  mysql-dbm:
+    image: mysql:8.0
+    container_name: mysql-dbm
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: yes
+      MYSQL_DATABASE: jobportal
+    volumes:
+      - mysql-data:/var/lib/mysql
+    restart: always
+
+  springboot-app:
+    build: .
+    container_name: springboot-app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql-dbm
+    environment:
+      SPRING_APPLICATION_NAME: Job Portal
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-dbm:3306/jobportal
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: yes
+      SPRING_JPA_DATABASE: MYSQL
+      SPRING_JPA_SHOW_SQL: true
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQL8Dialect
+      SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL: true
+      SPRING_JPA_PROPERTIES_HIBERNATE_HBM2DDL_AUTO: update
+    restart: always
+
+volumes:
+  mysql-data:
